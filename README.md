@@ -1,2 +1,2 @@
 # TourismApp
-unn Tourism App demo
+BUU Tourism App lesson
