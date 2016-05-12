@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#00000000"
+    android:paddingTop="10dip"
+    android:paddingBottom="10dip"
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/hid"
+            android:layout_width="58dip"
+            android:layout_height="58dip"
+            android:src="@drawable/h_0018" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dip"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dip"
+            android:layout_marginBottom="10dip"
+            android:textColor="#717171"
+            android:textSize="18sp"
+            android:text="随风" />
+
+        <TextView
+            android:id="@+id/mes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="25dip"
+            android:paddingRight="15dip"
+            android:paddingTop="15dip"
+            android:paddingBottom="15dip"
+            android:textColor="#000000"
+            android:textSize="20sp"
+            android:background="@drawable/mes_back"
+            android:text="我明天上午七点左右倒香山，有没有一起的？" />
+    </LinearLayout>
+
+</LinearLayout>

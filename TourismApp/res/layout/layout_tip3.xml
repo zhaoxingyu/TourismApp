@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_tip3" 
+        android:scaleType="centerCrop"
+        />
+    
+    <TextView
+        android:id="@+id/layout_tip3_btn_pass_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开始使用"
+        android:textColor="@android:color/white"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="@color/color_common_nav_top_bar"
+        android:textSize="@dimen/text_bigger"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        />
+
+</RelativeLayout>
