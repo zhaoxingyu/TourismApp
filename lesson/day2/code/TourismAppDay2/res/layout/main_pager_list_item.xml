@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="3dp" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp" >
+
+        <ImageView
+            android:id="@+id/poster"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:scaleType="fitXY" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#70000000"
+            android:paddingTop="3dp" 
+            android:paddingBottom="3dp"
+            android:paddingLeft="5dp"
+            >
+
+            <ImageView
+                android:id="@+id/pos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/ic_main_list_position" 
+                />
+
+            <TextView
+                android:id="@+id/nameAlias"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/pos"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="大理"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/text_smaller" 
+                android:layout_alignBottom="@id/pos"
+                />
+
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/nameAlias"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="925KM"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/text_smaller" 
+                 android:layout_alignBaseline="@id/nameAlias"
+                />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp" >
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="云南古镇丰粟村"
+            android:textColor="@color/color_common_text_main_title"
+            android:textSize="@dimen/text_big" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" >
+
+            <TextView
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="1280"
+                android:textColor="#23D66B"
+                android:textSize="@dimen/text_big" />
+
+            <TextView
+                android:id="@+id/lable_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="元"
+                android:textColor="#23D66B"
+                android:textSize="@dimen/text_smallest" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

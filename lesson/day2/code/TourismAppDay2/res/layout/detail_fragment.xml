@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_common_bg" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:paddingBottom="50dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/detail_fragment_poster"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="@color/blue"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/detail_fragment_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="云南古镇丰粟村"
+                android:textColor="@color/color_common_text_main_title"
+                android:textSize="@dimen/text_bigger" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="15dp"
+                android:background="@color/color_common_divider_gray" />
+
+            <TextView
+                android:id="@+id/detail_fragment_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="1280元"
+                android:textColor="@android:color/holo_red_dark"
+                android:textSize="@dimen/text_bigger" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="15dp"
+                android:background="@color/color_common_divider_gray" />
+
+            <TextView
+                android:id="@+id/detail_fragment_addr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="云南古镇丰粟村北村12组"
+                android:textColor="@color/color_common_text_main_title"
+                android:textSize="@dimen/text_bigger" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color_common_divider_gray" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingLeft="15dp" >
+
+                <TextView
+                    android:id="@+id/detail_fragment_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="详情介绍:暂无"
+                    android:textColor="@color/color_common_text_main_msg"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:id="@+id/detail_fragment_expiry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="有效期：2015.08.21 - 2016.01.01"
+                    android:textColor="@color/color_common_text_main_msg"
+                    android:textSize="@dimen/text_normal" />
+
+                <TextView
+                    android:id="@+id/detail_fragment_intro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="20dp"
+                    android:ellipsize="end"
+                    android:text="简介：大理古城又名叶榆城、紫禁城、中和镇。古城其历史可追溯至唐天宝年间，南诏王阁逻凤筑的羊苴咩城(今城之西三塔附近)，为其新都。现在的古城始建于明洪武十五年(公元1382年)，古城外有条护城河，古城四周有城墙，东、西、南、北各设一门，均有城楼，四角还有角楼。"
+                    android:textColor="@color/color_common_text_main_msg"
+                    android:textSize="@dimen/text_normal" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/color_common_divider_dark_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/color_common_bg"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/detail_fragment_bottom_dail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:src="@drawable/scenic_detail_dail_selector" 
+                android:clickable="true"
+                />
+
+            <ImageView
+                android:id="@+id/detail_fragment_bottom_map"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:clickable="true"
+                android:src="@drawable/scenic_detail_map_selector" />
+
+            <ImageView
+                android:id="@+id/detail_fragment_bottom_fav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:clickable="true"
+                android:src="@drawable/scenic_detail_fav_selector" />
+
+            <ImageView
+                android:id="@+id/detail_fragment_bottom_feedback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:clickable="true"
+                android:src="@drawable/scenic_detail_feedback_selector" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
