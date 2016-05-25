@@ -96,6 +96,6 @@ public abstract class BaseFragment extends Fragment implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        // deliver to child
+        // default do nothing, child need to reload
     }
 }

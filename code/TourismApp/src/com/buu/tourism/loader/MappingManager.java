@@ -3,8 +3,6 @@ package com.buu.tourism.loader;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
-
 import com.buu.tourism.GroupListActivity;
 import com.buu.tourism.activity.MainActivity;
 import com.buu.tourism.activity.SplashScreenActivity;
@@ -20,11 +18,9 @@ public class MappingManager {
 
     private static final String TAG = MappingManager.class.getSimpleName();
 
-    private final Context context;
     private MappingSpec mappingSpec;
 
-    public MappingManager(Context ctx) {
-        this.context = ctx;
+    public MappingManager() {
     }
 
     public MappingSpec mappingSpec() {

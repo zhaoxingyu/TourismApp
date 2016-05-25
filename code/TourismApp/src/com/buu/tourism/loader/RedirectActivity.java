@@ -89,13 +89,9 @@ public class RedirectActivity extends Activity {
 
     public MappingManager mappingManager() {
         if (mappingManager == null) {
-            mappingManager = createMappingManager();
+            mappingManager = new MappingManager();
         }
         return mappingManager;
-    }
-
-    protected MappingManager createMappingManager() {
-        return new MappingManager(this);
     }
 
     public Intent urlMap(Intent intent) {
