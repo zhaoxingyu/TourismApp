@@ -14,6 +14,10 @@ public class StringBody implements ContentBody {
         this.content = content;
         this.charset = charset;
     }
+    
+    public StringBody(String content) {
+        this(content, "UTF-8"); 
+    }
 
     @Override
     public String getMimeType() {

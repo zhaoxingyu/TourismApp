@@ -4,7 +4,6 @@
 package com.buu.tourism.net.engine;
 
 import java.io.InputStream;
-import java.net.Proxy;
 import java.util.HashMap;
 
 import android.os.Bundle;
@@ -31,6 +30,4 @@ public interface INetworkRequests {
     
     public HttpResultEntity request(HttpRequestEntity httpRequest, IHttpResponseCallBack callBack);
     
-    public HttpResultEntity request(HttpRequestEntity httpRequest, IHttpResponseCallBack callBack, boolean autoRedirect, Proxy proxy);
-
 }

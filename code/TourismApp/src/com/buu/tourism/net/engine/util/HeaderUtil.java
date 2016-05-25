@@ -1,12 +1,15 @@
 package com.buu.tourism.net.engine.util;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import com.buu.tourism.net.engine.CaseInsensitiveMapVS;
 
 public class HeaderUtil {
+    public static final String HEADER_STATUS_KEY = "statusline";
+
     /**
      * 获取header中key对应的value
      * @param key
@@ -23,6 +26,22 @@ public class HeaderUtil {
         }
         return value;
     }
+    /**
+     * 获取header中的状态行信息
+     * @param key
+     * @param header
+     * @return
+     */
+    public static String getStatusLine(Map<String, List<String>> header) {
+        String value = "";
+        if (null != header) {
+            List<String> values = header.get(HEADER_STATUS_KEY);
+            if (null != values && values.size() > 0) {
+                value = values.get(0);
+            }
+        }
+        return value;
+    }
     
     /**
      * 转换header为Map对象
@@ -31,7 +50,7 @@ public class HeaderUtil {
      * @return
      */
     public static Map<String, String> convertHeader2Map(Map<String, List<String>> header) {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new CaseInsensitiveMapVS();
         if (null != header) {
             Set<Entry<String, List<String>>> entrySet = header.entrySet();
             if (entrySet != null) {

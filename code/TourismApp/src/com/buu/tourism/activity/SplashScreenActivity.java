@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import cn.jpush.android.api.JPushInterface;
 
 import com.buu.tourism.R;
 import com.buu.tourism.conf.Setting;
@@ -43,6 +44,8 @@ public class SplashScreenActivity extends Activity {
         super.onResume();
         MobclickAgent.onPageStart("SplashScreen"); // 统计页面(仅有Activity的应用中SDK自动调用，不需要单独写)
         MobclickAgent.onResume(this); // 统计时长
+        
+        JPushInterface.onResume(this);
     }
 
     public void onPause() {
@@ -51,5 +54,6 @@ public class SplashScreenActivity extends Activity {
                                                  // onPageEnd 在onPause 之前调用,因为
                                                  // onPause 中会保存信息
         MobclickAgent.onPause(this);
+        JPushInterface.onPause(this);
     }
 }

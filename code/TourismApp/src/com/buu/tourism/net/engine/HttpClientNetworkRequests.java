@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -33,12 +34,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.TextUtils;
 
 import com.buu.tourism.TourismApplication;
-import com.buu.tourism.net.engine.HttpRequestEntity.MultiPartBody;
 import com.buu.tourism.net.engine.HttpRequestEntity.RequestBody;
-import com.buu.tourism.net.engine.content.ContentBody;
 
 /**
  * {@link HttpURLConnection}的轻量级网络请求引擎
@@ -51,6 +49,8 @@ public class HttpClientNetworkRequests implements INetworkRequests {
     private static final int CONNECTION_TIMEOUT = 30 * 1000;
     private static final int BUFFER_SIZE = 16 * 1024;
     private static SSLSocketFactory sSSLSocketFactory;
+    private int connTimeout = 0;
+    private int readTimeout = 0;
 
     /**
      * 根据参数构建完整的URL格式
@@ -88,75 +88,81 @@ public class HttpClientNetworkRequests implements INetworkRequests {
      * @param contentLen
      * @return
      */
-    public long calculateRequestTotalLength(URL url, RequestType type, Map<String, String> header, long contentLen) {
-        int urlLen = type.getMethod().length() + 1 + url.toString().length() + 1 + "HTTP/1.1".length();
+    long calculateRequestTotalLength(URL url, RequestType type, Map<String, String> header, long contentLen) {
+        int urlLen = 0;
         int headerLen = 0;
-        if (null != header) {
-            Set<Entry<String, String>> entrySet = header.entrySet();
-            for (Entry<String, String> entry : entrySet) {
-                headerLen = (headerLen + 1 + entry.getKey().length() + entry.getValue().length());
+        try {
+            if (null != url) {
+                StringBuilder statusLineBuilder = new StringBuilder();
+                String path = url.getPath();
+                path = (null == path) ? "" : path;
+                String query = url.getQuery();
+                query = (null == query) ? "" : query;
+                statusLineBuilder.append(type.getMethod())//
+                        .append(" ")//
+                        .append(path).append(query)//
+                        .append(" ")//
+                        .append("HTTP/1.1")//
+                        .append("\n");
+                urlLen = statusLineBuilder.length();
             }
+            if (null != header) {
+                Set<Entry<String, String>> entrySet = header.entrySet();
+                StringBuilder sb = new StringBuilder();
+                if (null != entrySet) {
+                    for (Entry<String, String> entry : entrySet) {
+                        String key = entry.getKey();
+                        key = (null == key) ? "" : key;
+                        String value = entry.getValue();
+                        value = (null == value) ? "" : value;
+                        sb.append(key)//
+                                .append(": ").append(value)//
+                                .append("\n");
+                    }
+                    headerLen = sb.length();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return urlLen + headerLen + contentLen;
+        long totalLen = urlLen + headerLen + contentLen;
+        return totalLen;
     }
 
     /**
-     * 将MutilPartBody写出到输入流
+     * 获取响应头的长度
      * 
-     * @param dos
-     *            网络输出流
-     * @param mutilPartBody
-     * @param boundary
+     * @param responseHeader
      * @return
      */
-    long writeMultipartStream(DataOutputStream dos, MultiPartBody mutilPartBody, String boundary) throws Exception {
-        long totalLen = 0;
-        String end = "\r\n";
-        String mark = "--";
-        Set<Entry<String, ContentBody>> entrySet = mutilPartBody.entrySet();
-        for (Entry<String, ContentBody> entry : entrySet) {
-            String name = entry.getKey();
-            ContentBody contentBody = entry.getValue();
-            dos.writeBytes(mark + boundary + end);
-            dos.writeBytes("Content-Disposition: form-data");
-            dos.writeBytes(";name=" + "\"" + name + "\"");
-
-            String fileName = contentBody.getFileName();
-            if (!TextUtils.isEmpty(fileName)) {
-                dos.writeBytes(";filename=" + "\"" + fileName + "\"");
+    long getResponseHeaderLength(Map<String, List<String>> responseHeader) {
+        long responseHeaderLen = 0;
+        try {
+            if (null != responseHeader) {
+                Set<Entry<String, List<String>>> entrySet = responseHeader.entrySet();
+                StringBuilder sb = new StringBuilder();
+                if (null != entrySet) {
+                    for (Entry<String, List<String>> entry : entrySet) {
+                        String key = entry.getKey();
+                        key = (null == key) ? "" : key;
+                        List<String> values = entry.getValue();
+                        String value = "";
+                        if (null != values && values.size() > 0) {
+                            value = values.get(0);
+                            value = (null == value) ? "" : value;
+                        }
+                        sb.append(key)//
+                                .append(": ")//
+                                .append(value)//
+                                .append("\n");
+                    }
+                }
+                responseHeaderLen = sb.length();
             }
-            dos.writeBytes(end);
-
-            String contentType = contentBody.getMimeType();
-            dos.writeBytes("Content-Type:" + "\"" + contentType + "\"");
-
-            String charset = contentBody.getCharset();
-            if (!TextUtils.isEmpty(charset)) {
-                dos.writeBytes(";charset:" + "\"" + charset + "\"");
-            }
-            dos.writeBytes(end);
-
-            dos.writeBytes("Content-Transfer-Encoding:" + "\"" + contentBody.getTransferEncoding() + "\"");
-
-            dos.writeBytes(end);
-            dos.writeBytes(end);
-
-            InputStream postStream = contentBody.getPostStream();
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int len = -1;
-
-            while ((len = postStream.read(buffer)) != -1) {
-                dos.write(buffer, 0, len);
-                dos.flush();
-                totalLen += len;
-            }
-            postStream.close();
-            dos.writeBytes(end);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        dos.writeBytes(mark + boundary + mark + end);
-        dos.flush();
-        return totalLen;
+        return responseHeaderLen;
     }
 
     @Override
@@ -181,20 +187,22 @@ public class HttpClientNetworkRequests implements INetworkRequests {
 
     @Override
     public HttpResultEntity post(String url, InputStream postStream) {
-        RequestBody<InputStream> requestBody = new RequestBody<InputStream>();
-        requestBody.setBody(postStream);
+
+        RequestBody requestBody = new RequestBody(postStream);
         HttpRequestEntity httpRequestEntity = new HttpRequestEntity(url);
         httpRequestEntity.setRequestBody(requestBody);
+        httpRequestEntity.setType(RequestType.POST);
         return request(httpRequestEntity);
     }
 
     @Override
     public HttpResultEntity post(String url, HashMap<String, String> header, InputStream postStream) {
-        RequestBody<InputStream> requestBody = new RequestBody<InputStream>();
-        requestBody.setBody(postStream);
+
+        RequestBody requestBody = new RequestBody(postStream);
         HttpRequestEntity httpRequestEntity = new HttpRequestEntity(url);
         httpRequestEntity.setHeader(header);
         httpRequestEntity.setRequestBody(requestBody);
+        httpRequestEntity.setType(RequestType.POST);
         return request(httpRequestEntity);
     }
 
@@ -205,11 +213,6 @@ public class HttpClientNetworkRequests implements INetworkRequests {
 
     @Override
     public HttpResultEntity request(HttpRequestEntity httpRequest, IHttpResponseCallBack callBack) {
-        return request(httpRequest, callBack, true, null);
-    }
-
-    @Override
-    public HttpResultEntity request(HttpRequestEntity httpRequest, IHttpResponseCallBack callBack, boolean autoRedirect, Proxy proxy) {
         HttpResultEntity httpResult = new HttpResultEntity();
         /**
          * 是否强制获取字符串结果
@@ -226,6 +229,12 @@ public class HttpClientNetworkRequests implements INetworkRequests {
          */
         boolean forceInputStream = httpRequest.forceInputStream;
 
+        /**
+         * 
+         * 是否自动处理重定向请求
+         */
+        boolean autoRedirect = httpRequest.autoRedirect;;
+        
         /**
          * 设置请求的url
          */
@@ -244,16 +253,19 @@ public class HttpClientNetworkRequests implements INetworkRequests {
         /**
          * 设置POST请求的输入流（网络层会读取该流，作为输出内容）
          */
-        RequestBody<?> requestBody = httpRequest.requestBody;
+
+        RequestBody requestBody = httpRequest.requestBody;
 
         /**
          * 设置请求的类型。GET/POST
          */
         RequestType type = httpRequest.type;
-
+        
         /**
-         * 设置请求的回调
+         * 设置请求的代理
          */
+        Proxy proxy = httpRequest.proxy;
+        
         HttpURLConnection urlConnection = null;
         if (null != callBack) {
             callBack = new UIHttpReqeuestCallBack(callBack);
@@ -263,7 +275,7 @@ public class HttpClientNetworkRequests implements INetworkRequests {
                 String newUrl = buildCompleteUrl(url, getParams);
                 url = newUrl;
             }
-            httpResult.requestGetParams = getParams;
+
             httpResult.requestTime = System.currentTimeMillis();
             httpResult.requestMethod = type.getMethod();
             httpResult.requestUrl = url;
@@ -272,41 +284,38 @@ public class HttpClientNetworkRequests implements INetworkRequests {
                 callBack.onStart();
             }
             urlConnection = newHttpClient(requestUrl, proxy, type.getMethod(), autoRedirect);
-
+            /****641新增自定义超时时间*****/
+            if(connTimeout > 0){
+            	urlConnection.setConnectTimeout(connTimeout);
+            }
+            if(readTimeout > 0){
+            	urlConnection.setReadTimeout(readTimeout);
+            }
+            /**************************/
             if (null != header && header.size() > 0) {
                 for (Entry<String, String> entry : header.entrySet()) {
                     urlConnection.setRequestProperty(entry.getKey(), entry.getValue());
                 }
             }
-            httpResult.requestHeader = urlConnection.getRequestProperties();
-            if (null != requestBody) {
+            httpResult.requestHeader = new CaseInsensitiveMapVL(urlConnection.getRequestProperties());
+            if (RequestType.POST.equals(type) && null != requestBody) {
                 urlConnection.setDoOutput(true);
                 urlConnection.setUseCaches(false);
-                urlConnection.setChunkedStreamingMode(0);
+//                urlConnection.setChunkedStreamingMode(0);
 
                 long totalLen = 0;
                 DataOutputStream dos = null;
 
-                Object body = requestBody.getBody();
-                if (body instanceof InputStream) {
-                    InputStream postStream = (InputStream) body;
-                    byte[] buffer = new byte[BUFFER_SIZE];
-                    int len = -1;
-                    dos = new DataOutputStream(urlConnection.getOutputStream());
-                    while ((len = postStream.read(buffer)) != -1) {
-                        dos.write(buffer, 0, len);
-                        dos.flush();
-                        totalLen += len;
-                    }
-                    postStream.close();
-                } else if (body instanceof MultiPartBody) {
-                    MultiPartBody mutilPartBody = (MultiPartBody) body;
-                    String boundary = "------------" + System.currentTimeMillis();
-                    urlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                    dos = new DataOutputStream(urlConnection.getOutputStream());
-                    long totalSize = writeMultipartStream(dos, mutilPartBody, boundary);
-                    totalLen = totalSize;
+                InputStream postStream = requestBody;
+                byte[] buffer = new byte[BUFFER_SIZE];
+                int len = -1;
+                dos = new DataOutputStream(urlConnection.getOutputStream());
+                while ((len = postStream.read(buffer)) != -1) {
+                    dos.write(buffer, 0, len);
+                    dos.flush();
+                    totalLen += len;
                 }
+                postStream.close();
                 dos.close();
                 httpResult.requestPostContentLength = totalLen;
             }
@@ -315,13 +324,20 @@ public class HttpClientNetworkRequests implements INetworkRequests {
             httpResult.responseStatusCode = responseCode;
             httpResult.responseTime = System.currentTimeMillis();
             Map<String, List<String>> responseHeader = urlConnection.getHeaderFields();
-            httpResult.responseHeader = responseHeader;
+            httpResult.responseHeader = new CaseInsensitiveMapVL(responseHeader);
             int responseContentLength = urlConnection.getContentLength();
-            long responseHeaderLength = getResponseHeaderLength(responseHeader);
+            long responseHeaderLength = getResponseHeaderLength(httpResult.responseHeader);
             httpResult.responseContentLength = responseContentLength;
             httpResult.responseTotalLength = responseContentLength + responseHeaderLength;
-            InputStream responseStream = urlConnection.getInputStream();
-
+            InputStream responseStream = urlConnection.getInputStream();;
+            //判断如果是gzip压缩模式，如果是则转换该流
+            List<String> list = httpResult.responseHeader.get("Content-Encoding");
+            if (null != list && list.size() > 0) {
+                String value =  list.get(0);
+                if (null != value && value.toLowerCase().indexOf("gzip") > -1) {
+                    responseStream = new GZIPInputStream(responseStream);
+                }
+            }
             // 如果是强制获取输出流，则不再进行转换解析
             if (forceInputStream) {
                 httpResult.responseInputStream = responseStream;
@@ -331,24 +347,22 @@ public class HttpClientNetworkRequests implements INetworkRequests {
                     String charset = "UTF-8";
                     // should convert inputstream to a string ？
                     boolean shouldConvert2Str = false;
-                    if (null != responseHeader) {
-                        List<String> contentTypes = responseHeader.get("Content-Type");
-                        if (null != contentTypes && contentTypes.size() > 0) {
-                            try {
-                                String contentType = contentTypes.get(0);
-                                contentType = contentType.toLowerCase();
-                                int index = -1;
-                                String target = "charset=";
-                                if ((index = contentType.indexOf(target)) != -1) {
-                                    charset = contentType.substring(index + target.length(), contentType.length());
-                                    charset = charset.trim();
-                                }
-                                shouldConvert2Str = (contentType.contains(target) || contentType.contains("text")
-                                        || contentType.contains("json") || contentType.contains("xml"));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                charset = "UTF-8";
+                    List<String> contentTypes = httpResult.responseHeader.get("Content-Type");
+                    if (null != contentTypes && contentTypes.size() > 0) {
+                        try {
+                            String contentType = contentTypes.get(0);
+                            contentType = contentType.toLowerCase();
+                            int index = -1;
+                            String target = "charset=";
+                            if ((index = contentType.indexOf(target)) != -1) {
+                                charset = contentType.substring(index + target.length(), contentType.length());
+                                charset = charset.trim();
                             }
+                            shouldConvert2Str = (contentType.contains(target) || contentType.contains("text")
+                                    || contentType.contains("json") || contentType.contains("xml"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            charset = "UTF-8";
                         }
                     }
 
@@ -401,7 +415,7 @@ public class HttpClientNetworkRequests implements INetworkRequests {
         } catch (OutOfMemoryError e) {
             httpResult.exception = e;
         } finally {
-            if (null != urlConnection) {
+            if (null != urlConnection && !forceInputStream) {
                 urlConnection.disconnect();
             }
             if (null != callBack) {
@@ -409,33 +423,6 @@ public class HttpClientNetworkRequests implements INetworkRequests {
             }
         }
         return httpResult;
-    }
-
-    /**
-     * 获取响应头的长度
-     * 
-     * @param responseHeader
-     * @return
-     */
-    private long getResponseHeaderLength(Map<String, List<String>> responseHeader) {
-        long totalLen = 0;
-        if (null != responseHeader) {
-            Set<Entry<String, List<String>>> entrySet = responseHeader.entrySet();
-            StringBuilder sb = new StringBuilder();
-            if (null != entrySet) {
-                for (Entry<String, List<String>> entry : entrySet) {
-                    String key = entry.getKey();
-                    List<String> values = entry.getValue();
-                    if (null != values && values.size() > 0) {
-                        sb.append(key)//
-                                .append(":").append(values.get(0))//
-                                .append("\r\n");
-                    }
-                }
-            }
-            totalLen = sb.length();
-        }
-        return totalLen;
     }
 
     /**
@@ -502,6 +489,32 @@ public class HttpClientNetworkRequests implements INetworkRequests {
         return certificate;
     }
 
+    static SSLSocketFactory getSSLSocketFactory(Context context) {
+        if (sSSLSocketFactory == null) {
+            try {
+                // Create a KeyStore containing our trusted CAs
+                String keyStoreType = KeyStore.getDefaultType();
+                KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+                keyStore.load(null, null);
+                Certificate cnCertificate = loadWeiboCertificate(context, "weibocn.cer");
+                Certificate comCertificate = loadWeiboCertificate(context, "weibocom.cer");
+                keyStore.setCertificateEntry("cnca", cnCertificate);
+                keyStore.setCertificateEntry("comca", comCertificate);
+                sSSLSocketFactory = new SSLSocketFactoryEx(keyStore);
+            } catch (Exception e) {
+                e.printStackTrace();
+                // 如果加载内置证书失败，则返回系统默认
+                try {
+                    sSSLSocketFactory = SSLContext.getDefault().getSocketFactory();
+                } catch (NoSuchAlgorithmException e1) {
+                    e1.printStackTrace();
+                    sSSLSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+                }
+            }
+        }
+        return sSSLSocketFactory;
+    }
+
     /**
      * 创建一个urlconnection实例
      * 
@@ -519,12 +532,30 @@ public class HttpClientNetworkRequests implements INetworkRequests {
         } else {
             urlConnection = (HttpURLConnection) requestUrl.openConnection();
         }
+        if ("https".equalsIgnoreCase(requestUrl.getProtocol())) {
+            HttpsURLConnection cons = (HttpsURLConnection) urlConnection;
+            cons.setSSLSocketFactory(getSSLSocketFactory(TourismApplication.getInstance()));
+        }
         urlConnection.setRequestMethod(method);
         urlConnection.setDoInput(true);
+        
         urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
         urlConnection.setReadTimeout(SOCKET_OPERATION_TIMEOUT);
         urlConnection.setInstanceFollowRedirects(autoRedirect);
-        urlConnection.setRequestProperty("Connection", "keep-alive");
         return urlConnection;
+    }
+    
+    /**
+     * 设置Http请求链接超时时间
+     */
+    public void setConnectionTimeout(int conn_timeout){
+    	connTimeout = conn_timeout;
+    }
+    
+    /**
+     * 设置读取Http请求响应流超时时间
+     */
+    public void setConnectionReadTimeout(int read_timeout){
+    	readTimeout = read_timeout;
     }
 }

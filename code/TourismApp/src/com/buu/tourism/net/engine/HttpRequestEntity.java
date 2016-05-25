@@ -1,13 +1,12 @@
 package com.buu.tourism.net.engine;
 
-import java.util.HashMap;
+
+import java.io.FilterInputStream;
+import java.io.InputStream;
+import java.net.Proxy;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import android.os.Bundle;
-
-import com.buu.tourism.net.engine.content.ContentBody;
 
 /**
  * 请求的实体封装
@@ -31,6 +30,11 @@ public class HttpRequestEntity {
      * 是否强制获取输出流
      */
     public boolean forceInputStream;
+    /**
+     * 
+     * 是否自动处理重定向请求
+     */
+    public boolean autoRedirect = true;
 
     /**
      * 设置请求的url
@@ -46,16 +50,26 @@ public class HttpRequestEntity {
      * 设置GET请求的参数
      */
     public Bundle getParams;
+    /**
+     * 设置POST请求的参数
+     */
+    public Bundle postParams;
 
     /**
      * 设置请求体
      */
-    public RequestBody<?> requestBody;
+
+    public RequestBody requestBody;
 
     /**
      * 设置请求的类型。GET/POST
      */
     public RequestType type = RequestType.GET;
+    
+    /**
+     * 设置请求的代理
+     */
+    public Proxy proxy;
 
     public HttpRequestEntity(String url) {
         super();
@@ -74,6 +88,10 @@ public class HttpRequestEntity {
     public void setForceInputStream(boolean forceInputStream) {
         this.forceInputStream = forceInputStream;
     }
+    
+    public void setAutoRedirect(boolean autoRedirect) {
+        this.autoRedirect = autoRedirect;
+    }
 
     public void setUrl(String url) {
         this.url = url;
@@ -86,38 +104,50 @@ public class HttpRequestEntity {
     public void setGetParams(Bundle getParams) {
         this.getParams = getParams;
     }
+    
+    public void setPostParams(Bundle postParams) {
+        this.postParams = postParams;
+    }
 
-    public void setRequestBody(RequestBody<?> requestBody) {
+
+    public void setRequestBody(RequestBody requestBody) {
         this.requestBody = requestBody;
     }
 
     public void setType(RequestType type) {
         this.type = type;
     }
-
-
-    public static class RequestBody<E> {
-        E e;
-
-        public E getBody() {
-            return e;
-        };
-
-        public void setBody(E body) {
-            this.e = body;
-        };
+    
+    public void setProxy(Proxy proxy) {
+        this.proxy = proxy;
     }
 
-    public static class MultiPartBody {
-        Map<String, ContentBody> map = new HashMap<String, ContentBody>();
 
-        public void addPart(String key, ContentBody body) {
-            map.put(key, body);
+    /**
+     * 以流的形式作为POST方式的请求体。
+     * @author zhaoxingyu
+     *
+     */
+    public static class RequestBody extends FilterInputStream{
+        
+        public RequestBody(InputStream in) {
+            super(in);
         }
 
-        public Set<Entry<String, ContentBody>> entrySet() {
-            return map.entrySet();
+        Bundle postParams;
+        /**
+         * 设置原始的业务请求数据
+         * @param postParams
+         */
+        public void setPostParams(Bundle postParams) {
+            this.postParams = postParams;
+        }
+        /**
+         * 获取原始的业务请求数据
+         * @return
+         */
+        public Bundle getPostParams() {
+            return postParams;
         }
     }
-
 }

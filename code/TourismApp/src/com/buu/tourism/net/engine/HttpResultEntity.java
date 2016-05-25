@@ -32,14 +32,7 @@ public class HttpResultEntity {
      * 请求的header头
      */
     public Map<String, List<String>> requestHeader;
-    /**
-     * get方式的请求参数
-     */
-    public Bundle requestGetParams;
-    /**
-     * post的请求参数
-     */
-    public Map<String, String> requestPostParams;
+
 
     /**
      * HTTP响应状态码
@@ -105,8 +98,7 @@ public class HttpResultEntity {
         this.requestPostContentLength = requestPostContentLength;
         this.requestTotalLength = requestTotalLength;
         this.requestHeader = requestHeader;
-        this.requestGetParams = requestGetParams;
-        this.requestPostParams = requestPostParams;
+
         this.responseStatusCode = responseStatusCode;
         this.responseHeader = responseHeader;
         this.responseStr = responseStr;
@@ -123,10 +115,10 @@ public class HttpResultEntity {
     public String toString() {
         return "HttpResult [requestUrl=" + requestUrl + ", requestMethod=" + requestMethod + ", requestPostContentLength="
                 + requestPostContentLength + ", requestTotalLength=" + requestTotalLength + ", requestHeader=" + requestHeader
-                + ", requestGetParams=" + requestGetParams + ", requestPostParams=" + requestPostParams + ", responseStatusCode="
-                + responseStatusCode + ", responseHeader=" + responseHeader + ", responseStr=" + responseStr + ", responseByteArray="
-                + responseByteArray + ", responseContentLength=" + responseContentLength + ", requestTime=" + requestTime
-                + ", responseTime=" + responseTime + ", finishTime=" + finishTime + ", exception=" + exception + "]";
+
+                + ", responseStatusCode=" + responseStatusCode + ", responseHeader=" + responseHeader + ", responseStr=" + responseStr
+                + ", responseByteArray=" + responseByteArray + ", responseContentLength=" + responseContentLength + ", requestTime="
+                + requestTime + ", responseTime=" + responseTime + ", finishTime=" + finishTime + ", exception=" + exception + "]";
     }
 
 }

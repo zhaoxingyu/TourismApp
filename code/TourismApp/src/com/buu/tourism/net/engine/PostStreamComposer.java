@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.util.Set;
 
 import android.os.Bundle;
+import android.util.Log;
 
 public class PostStreamComposer {
 
@@ -45,6 +46,16 @@ public class PostStreamComposer {
             try {
                 for (String key : keys) {
                     Object value = postParams.get(key);
+                    if(value==null){
+                    	String valueStr = "";
+                        String encodeKey = URLEncoder.encode(key, "UTF-8");
+                        String encodeValue = URLEncoder.encode(valueStr, "UTF-8");
+                        sb.append(encodeKey)//
+                        .append("=")//
+                        .append(encodeValue)
+                        .append("&");
+                    	Log.d("weibo", "======eeeeeeee");
+                    }else{
                     String valueStr = value.toString();
                     String encodeKey = URLEncoder.encode(key, "UTF-8");
                     String encodeValue = URLEncoder.encode(valueStr, "UTF-8");
@@ -52,6 +63,7 @@ public class PostStreamComposer {
                     .append("=")//
                     .append(encodeValue)
                     .append("&");
+                    }
                 }
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
