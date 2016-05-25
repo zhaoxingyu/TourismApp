@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URL;
-import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -233,8 +232,9 @@ public class HttpClientNetworkRequests implements INetworkRequests {
          * 
          * 是否自动处理重定向请求
          */
-        boolean autoRedirect = httpRequest.autoRedirect;;
-        
+        boolean autoRedirect = httpRequest.autoRedirect;
+        ;
+
         /**
          * 设置请求的url
          */
@@ -260,12 +260,12 @@ public class HttpClientNetworkRequests implements INetworkRequests {
          * 设置请求的类型。GET/POST
          */
         RequestType type = httpRequest.type;
-        
+
         /**
          * 设置请求的代理
          */
         Proxy proxy = httpRequest.proxy;
-        
+
         HttpURLConnection urlConnection = null;
         if (null != callBack) {
             callBack = new UIHttpReqeuestCallBack(callBack);
@@ -284,12 +284,12 @@ public class HttpClientNetworkRequests implements INetworkRequests {
                 callBack.onStart();
             }
             urlConnection = newHttpClient(requestUrl, proxy, type.getMethod(), autoRedirect);
-            /****641新增自定义超时时间*****/
-            if(connTimeout > 0){
-            	urlConnection.setConnectTimeout(connTimeout);
+            /**** 641新增自定义超时时间 *****/
+            if (connTimeout > 0) {
+                urlConnection.setConnectTimeout(connTimeout);
             }
-            if(readTimeout > 0){
-            	urlConnection.setReadTimeout(readTimeout);
+            if (readTimeout > 0) {
+                urlConnection.setReadTimeout(readTimeout);
             }
             /**************************/
             if (null != header && header.size() > 0) {
@@ -301,7 +301,7 @@ public class HttpClientNetworkRequests implements INetworkRequests {
             if (RequestType.POST.equals(type) && null != requestBody) {
                 urlConnection.setDoOutput(true);
                 urlConnection.setUseCaches(false);
-//                urlConnection.setChunkedStreamingMode(0);
+                // urlConnection.setChunkedStreamingMode(0);
 
                 long totalLen = 0;
                 DataOutputStream dos = null;
@@ -329,11 +329,12 @@ public class HttpClientNetworkRequests implements INetworkRequests {
             long responseHeaderLength = getResponseHeaderLength(httpResult.responseHeader);
             httpResult.responseContentLength = responseContentLength;
             httpResult.responseTotalLength = responseContentLength + responseHeaderLength;
-            InputStream responseStream = urlConnection.getInputStream();;
-            //判断如果是gzip压缩模式，如果是则转换该流
+            InputStream responseStream = urlConnection.getInputStream();
+            ;
+            // 判断如果是gzip压缩模式，如果是则转换该流
             List<String> list = httpResult.responseHeader.get("Content-Encoding");
             if (null != list && list.size() > 0) {
-                String value =  list.get(0);
+                String value = list.get(0);
                 if (null != value && value.toLowerCase().indexOf("gzip") > -1) {
                     responseStream = new GZIPInputStream(responseStream);
                 }
@@ -386,7 +387,7 @@ public class HttpClientNetworkRequests implements INetworkRequests {
                             }
                             contentLength += len;
                         }
-                        //这里再重新给响应内容大小 赋值
+                        // 这里再重新给响应内容大小 赋值
                         httpResult.responseContentLength = contentLength;
                         httpResult.responseTotalLength = responseHeaderLength + contentLength;
                         /**
@@ -492,24 +493,10 @@ public class HttpClientNetworkRequests implements INetworkRequests {
     static SSLSocketFactory getSSLSocketFactory(Context context) {
         if (sSSLSocketFactory == null) {
             try {
-                // Create a KeyStore containing our trusted CAs
-                String keyStoreType = KeyStore.getDefaultType();
-                KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-                keyStore.load(null, null);
-                Certificate cnCertificate = loadWeiboCertificate(context, "weibocn.cer");
-                Certificate comCertificate = loadWeiboCertificate(context, "weibocom.cer");
-                keyStore.setCertificateEntry("cnca", cnCertificate);
-                keyStore.setCertificateEntry("comca", comCertificate);
-                sSSLSocketFactory = new SSLSocketFactoryEx(keyStore);
-            } catch (Exception e) {
-                e.printStackTrace();
-                // 如果加载内置证书失败，则返回系统默认
-                try {
-                    sSSLSocketFactory = SSLContext.getDefault().getSocketFactory();
-                } catch (NoSuchAlgorithmException e1) {
-                    e1.printStackTrace();
-                    sSSLSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                }
+                sSSLSocketFactory = SSLContext.getDefault().getSocketFactory();
+            } catch (NoSuchAlgorithmException e1) {
+                e1.printStackTrace();
+                sSSLSocketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             }
         }
         return sSSLSocketFactory;
@@ -538,24 +525,24 @@ public class HttpClientNetworkRequests implements INetworkRequests {
         }
         urlConnection.setRequestMethod(method);
         urlConnection.setDoInput(true);
-        
+
         urlConnection.setConnectTimeout(CONNECTION_TIMEOUT);
         urlConnection.setReadTimeout(SOCKET_OPERATION_TIMEOUT);
         urlConnection.setInstanceFollowRedirects(autoRedirect);
         return urlConnection;
     }
-    
+
     /**
      * 设置Http请求链接超时时间
      */
-    public void setConnectionTimeout(int conn_timeout){
-    	connTimeout = conn_timeout;
+    public void setConnectionTimeout(int conn_timeout) {
+        connTimeout = conn_timeout;
     }
-    
+
     /**
      * 设置读取Http请求响应流超时时间
      */
-    public void setConnectionReadTimeout(int read_timeout){
-    	readTimeout = read_timeout;
+    public void setConnectionReadTimeout(int read_timeout) {
+        readTimeout = read_timeout;
     }
 }
