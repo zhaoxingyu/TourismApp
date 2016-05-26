@@ -6,6 +6,7 @@ import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
 import com.buu.tourism.TourismApplication;
+import com.buu.tourism.util.Util;
 
 public class Setting {
 
@@ -94,5 +95,9 @@ public class Setting {
     public static boolean isUserLogin() {
         //TODO
         return true;
+    }
+
+    public static boolean enableMockData(String filePath) {
+        return Util.enableTrick(filePath);
     }
 }

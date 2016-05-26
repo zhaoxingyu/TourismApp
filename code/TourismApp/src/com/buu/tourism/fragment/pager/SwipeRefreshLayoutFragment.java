@@ -28,6 +28,7 @@ import com.buu.tourism.conf.Setting;
 import com.buu.tourism.loader.UriConfig;
 import com.buu.tourism.net.HttpAccessor;
 import com.buu.tourism.net.HttpResponseHandler;
+import com.buu.tourism.net.MockHttpReqeust;
 import com.buu.tourism.net.engine.HttpRequestEntity;
 import com.buu.tourism.net.engine.HttpResultEntity;
 import com.buu.tourism.net.engine.IHttpResponseCallBack;
@@ -109,15 +110,17 @@ public abstract class SwipeRefreshLayoutFragment extends Fragment implements OnR
     }
 
     private void refresh() {
-        // mHandler.removeCallbacks(mRefreshDone);
-        // Future<?> request = HttpAccessor.getInstance().request(new
-        // MockHttpReqeust(getmockData()), responseHandler);
-        mHandler.removeCallbacks(mRefreshDone);
-        String host = getServerHost();
-        String url = host + "pager" + getPagerId();
-        HttpRequestEntity httpResultEntity = new HttpRequestEntity(url);
-        httpResultEntity.setForceString(true);
-        Future<?> request = HttpAccessor.getInstance().request(httpResultEntity, responseHandler);
+        if (Setting.enableMockData("pager.txt")) {
+            mHandler.removeCallbacks(mRefreshDone);
+            Future<?> request = HttpAccessor.getInstance().request(new MockHttpReqeust(getmockData()), responseHandler);
+        } else {
+            mHandler.removeCallbacks(mRefreshDone);
+            String host = getServerHost();
+            String url = host + "pager" + getPagerId();
+            HttpRequestEntity httpResultEntity = new HttpRequestEntity(url);
+            httpResultEntity.setForceString(true);
+            Future<?> request = HttpAccessor.getInstance().request(httpResultEntity, responseHandler);
+        }
     }
 
     IHttpResponseCallBack responseHandler = new HttpResponseHandler<ScenicInfoBean>(ScenicInfoBean.class) {

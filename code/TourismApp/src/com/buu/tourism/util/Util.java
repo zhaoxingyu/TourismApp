@@ -1,5 +1,6 @@
 package com.buu.tourism.util;
 
+import java.io.File;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
@@ -168,5 +170,21 @@ public class Util {
     public static boolean isGPSEnable(Context context){
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+    
+    /**
+     * 判断SDCard上是否存在改文件
+     * @param filePath
+     * @return
+     */
+    public static boolean enableTrick(String filePath) {
+        boolean yes = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
+        if (yes) {
+            File externalStorageDirectory = Environment.getExternalStorageDirectory();
+            return new File(externalStorageDirectory, filePath).exists();
+        } else {
+            return false;
+        }
+        
     }
 }

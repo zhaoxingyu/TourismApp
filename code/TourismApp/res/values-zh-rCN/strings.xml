@@ -20,5 +20,6 @@
     <string name="setting_item_clean_cache">清除缓存</string>
     <string name="setting_item_feedback">意见反馈</string>
     <string name="setting_item_aboutus">关于我们</string>
-
+    <string name="setting_item_qcode">扫一扫</string>
+    <string name="setting_item_unknowed">未知功能</string>
 </resources>

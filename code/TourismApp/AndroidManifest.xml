@@ -99,7 +99,7 @@
 
                 <!-- <data android:scheme="@string/app_redirect_scheme" /> -->
                 <!-- fix 兼容android 2.1 -->
-                <data android:scheme="@string/app_redirect_scheme" />
+                <data android:scheme="buu" />
             </intent-filter>
         </activity>
 

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="setting_item_portrait" type="id"/>
-    <item name="setting_item_nickname" type="id"/>
-    <item name="setting_item_check_update" type="id"/>
-    <item name="setting_item_clean_cache" type="id"/>
-    <item name="setting_item_feedback" type="id"/>
-    <item name="setting_item_aboutus" type="id"/>
-</resources>

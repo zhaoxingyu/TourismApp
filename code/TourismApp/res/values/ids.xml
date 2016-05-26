@@ -6,4 +6,5 @@
     <item name="setting_item_clean_cache" type="id"/>
     <item name="setting_item_feedback" type="id"/>
     <item name="setting_item_aboutus" type="id"/>
+    <item name="setting_item_qcode" type="id"/>
 </resources>

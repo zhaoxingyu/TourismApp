@@ -18,6 +18,8 @@ public class ResourceMapping {
             return R.string.setting_item_feedback;
         case R.id.setting_item_aboutus:
             return R.string.setting_item_aboutus;
+        case R.id.setting_item_qcode:
+            return R.string.setting_item_qcode;
         default:
             return R.string.action_settings;
         }

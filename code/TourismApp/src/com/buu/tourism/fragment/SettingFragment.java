@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.buu.tourism.R;
 import com.buu.tourism.ResConfig;
@@ -61,6 +62,14 @@ public class SettingFragment extends BaseFragment implements OnClickListener {
         mContainer.addView(MyViewCreator.createDividerLineMinorView(context));
 
         mContainer.addView(MyViewCreator.createSettingViewItem(context, R.id.setting_item_aboutus, this));
+        mContainer.addView(MyViewCreator.createDividerLineView(context));
+        
+        mContainer.addView(MyViewCreator.createDividerGapView(context, 10));
+        mContainer.addView(MyViewCreator.createDividerLineView(context));
+        
+        View qcode = MyViewCreator.createSettingViewItem(context, R.id.setting_item_qcode, this);
+        ((TextView)qcode.findViewById(R.id.textview1)).setText(R.string.setting_item_unknowed);;
+        mContainer.addView(qcode);
         mContainer.addView(MyViewCreator.createDividerLineView(context));
 
         return myFragment;
@@ -175,12 +184,24 @@ public class SettingFragment extends BaseFragment implements OnClickListener {
             Intent intent = new Intent(Intent.ACTION_VIEW, UriConfig.getSettingAboutusUri());
             getActivity().startActivity(intent);
             break;
+        case R.id.setting_item_qcode:
+            colorEggIndex++;
+            if (colorEggIndex > 2) {
+                ((TextView)v.findViewById(R.id.textview1)).setText(R.string.setting_item_qcode);;
+                //TODO
+                Toast.makeText(getContext(), "打开扫一扫功能", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "再点击"+ (3 - colorEggIndex) +"次，可激活未知功能", Toast.LENGTH_SHORT).show();
+            }
+            
+            break;
 
         default:
             break;
         }
     }
 
+    static int colorEggIndex = 0;
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
