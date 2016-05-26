@@ -48,13 +48,13 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 
         mTabsAdapter = new TabsAdapter(this, mTabHost, mViewPager);
 
-        mTabsAdapter.addTab(mTabHost.newTabSpec("simple").setIndicator(getResources().getString(R.string.main_pager_recommend)),
+        mTabsAdapter.addTab(mTabHost.newTabSpec("recommend").setIndicator(getResources().getString(R.string.main_pager_recommend)),
                 PagerFragment1.class, null);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("contacts").setIndicator(getResources().getString(R.string.main_pager_town)),
+        mTabsAdapter.addTab(mTabHost.newTabSpec("town").setIndicator(getResources().getString(R.string.main_pager_town)),
                 PagerFragment2.class, null);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("custom").setIndicator(getResources().getString(R.string.main_pager_country)),
+        mTabsAdapter.addTab(mTabHost.newTabSpec("country").setIndicator(getResources().getString(R.string.main_pager_country)),
                 PagerFragment3.class, null);
-        mTabsAdapter.addTab(mTabHost.newTabSpec("throttle").setIndicator(getResources().getString(R.string.main_pager_city)),
+        mTabsAdapter.addTab(mTabHost.newTabSpec("city").setIndicator(getResources().getString(R.string.main_pager_city)),
                 PagerFragment4.class, null);
 
         if (savedInstanceState != null) {
